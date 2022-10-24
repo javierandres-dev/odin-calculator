@@ -7,55 +7,66 @@ $display.textContent = '0';
 
 d.addEventListener('DOMContentLoaded', eventListeners);
 
+const showResult = (result) => ($display.textContent = result);
+
+const add = (num1, num2) => num1 + num2;
+
+const subtract = (num1, num2) => num1 - num2;
+
+const multiply = (num1, num2) => num1 * num2;
+
+const divide = (num1, num2) => num1 / num2;
+
+const operate = (operator, num1, num2) => {
+  if (operator === '+') return add(num1, num2);
+  if (operator === '-') return subtract(num1, num2);
+  if (operator === '*') return multiply(num1, num2);
+  if (operator === '/') return divide(num1, num2);
+};
+
 function eventListeners() {
   let operator = null,
     num1 = null,
     num2 = null,
-    result = null,
-    previousOp = null,
-    strAux = '';
+    str = '',
+    previousOp = null;
 
-  const resetVars = (display = '0') => {
-    $display.textContent = display;
+  const reset = () => {
     operator = null;
     num1 = null;
     num2 = null;
-    result = null;
+    str = '';
     previousOp = null;
-    strAux = '';
   };
 
   $btns.forEach(($btn) => {
     $btn.addEventListener('click', () => {
       const value = +$btn.value;
       if (isNaN(value)) {
-        if ($btn.value === 'reset') resetVars();
-        else {
+        if ($btn.value === 'reset') {
+          reset();
+          showResult(0);
+        } else {
           previousOp = operator;
           operator = $btn.value;
           if ($btn.value === '=') {
             if (!num1 || !previousOp) return;
-            else {
-              if (!num2) num2 = +$display.textContent;
-              result = operate(previousOp, num1, num2);
-              resetVars(result);
-            }
-          } else if (!num1) {
-            num1 = +$display.textContent;
-          } else if (!num2) {
-            num2 = +$display.textContent;
-            if (previousOp) result = operate(previousOp, num1, num2);
-            else result = operate(operator, num1, num2);
-            $display.textContent = result;
+            if (!num2) num2 = +$display.textContent;
+            showResult(operate(previousOp, num1, num2));
+            reset();
           } else {
-            if (previousOp) {
-              result = operate(previousOp, num1, num2);
-              num1 = result;
+            if (!num1) {
+              num1 = +$display.textContent;
+            } else if (!num2) {
+              num2 = +$display.textContent;
+              str = '';
+            } else {
+              if (previousOp) num1 = operate(previousOp, num1, num2);
+              else num1 = operate(operator, num1, num2);
+              num2 = +$display.textContent;
+              showResult(operate(operator, num1, num2));
+              str = '';
             }
-            num2 = +$display.textContent;
-            result = operate(operator, num1, num2);
-            $display.textContent = result;
-            strAux = '';
           }
         }
       } else {
@@ -64,39 +75,13 @@ function eventListeners() {
         } else if (!num1) {
           $display.textContent += $btn.value;
         } else if (!num2) {
-          strAux += $btn.value;
-          $display.textContent = strAux;
+          str += $btn.value;
+          $display.textContent = str;
         } else {
-          strAux += $btn.value;
-          $display.textContent = strAux;
+          str += $btn.value;
+          $display.textContent = str;
         }
       }
     });
   });
-}
-
-function operate(operator, num1, num2) {
-  console.log('operate :>> ', num1, operator, num2);
-  let result = null;
-  if (operator === '+') result = add(num1, num2);
-  if (operator === '-') result = subtract(num1, num2);
-  if (operator === '*') result = multiply(num1, num2);
-  if (operator === '/') result = divide(num1, num2);
-  return result;
-}
-
-function add(num1, num2) {
-  return num1 + num2;
-}
-
-function subtract(num1, num2) {
-  return num1 - num2;
-}
-
-function multiply(num1, num2) {
-  return num1 * num2;
-}
-
-function divide(num1, num2) {
-  return num1 / num2;
 }
